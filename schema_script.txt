@@ -1,0 +1,113 @@
+model user {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt()
+  firstName       String           @db.VarChar(50)
+  middleName      String           @db.VarChar(50)
+  lastName        String           @db.VarChar(50)
+  mobile          String           @db.VarChar(15)
+  email           String           @db.VarChar(50)
+  passwordHash    String           @db.VarChar(32)
+  registeredAt    DateTime         @default(now()) @db.Timestamp(0)
+  lastLoginAt     DateTime         @default(now()) @db.Timestamp(0)
+}
+
+model tag {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  title           String           @db.VarChar(75)
+  metaTitle       String           @db.VarChar(100)
+  slug            String           @db.VarChar(100)
+  post_tag        post_tag[]
+}
+
+model post {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt()
+  authorId	  BigInt           @db.BigInt()	
+  parentId	  BigInt           @unique @db.UnsignedBigInt
+  title           String           @db.VarChar(75)
+  metaTitle       String           @db.VarChar(100)
+  slug            String           @db.VarChar(100)
+  summary         String           @db.VarChar(100) 
+  published       String           @db.VarChar(100)
+  createdAt       DateTime         @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime         @default(now()) @updatedAt @db.Timestamp(0)
+  publishedAt     DateTime         @default(now()) @db.Timestamp(0)
+  post_tag        post_tag[]
+  post_meta       post_meta[]
+  post_comment    post_comment[]
+  post_category   post_category[]
+}
+
+model post_tag {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  postId          BigInt           @unique @db.UnsignedBigInt
+  tagId           BigInt           @unique @db.UnsignedBigInt
+  post            post             @relation(fields: [postId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  tag             tag             @relation(fields: [tagId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model post_meta {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  postId          BigInt           @unique @db.UnsignedBigInt
+  key             String           @db.VarChar(50)
+  post            post             @relation(fields: [postId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model post_comment {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  postId          BigInt           @unique @db.UnsignedBigInt
+  parentId	      BigInt           @unique @db.UnsignedBigInt
+  title           String           @db.VarChar(75)
+  published       String           @db.VarChar(100)
+  createdAt       DateTime         @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime         @default(now()) @updatedAt @db.Timestamp(0)
+  publishedAt     DateTime         @default(now()) @db.Timestamp(0)
+  post            post             @relation(fields: [postId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model category {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  parentId	      BigInt           @unique @db.UnsignedBigInt
+  title           String           @db.VarChar(75)
+  metaTitle       String           @db.VarChar(100)
+  slug            String           @db.VarChar(100)
+  post_category   post_category?
+}
+
+
+model post_category {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  postId          BigInt           @unique @db.UnsignedBigInt
+  categoryId      BigInt           @unique @db.UnsignedBigInt
+  post            post             @relation(fields: [postId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  category        category         @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+}
+
+
+
+http://localhost:3000/api/user_schema/
+POST
+{
+    "firstName": "Md",
+    "middleName":"Mehadee",
+    "lastName": "Hasan",
+    "mobile"  : "01717525405",
+    "email"   : "mehadeehasan@gmail.com",
+    "passwordHash":"123456"
+}
+
+http://localhost:3000/api/tag_schema/
+POST
+{
+    "title": "Md",
+    "metaTitle":"Mehadee",
+    "slug": "Hasan"
+}
+{
+    "title": "Don't worry about conspiracies hatched ahead of election: PM",
+    "metaTitle":"election",
+    "slug": "election"
+}
+{
+    "title": "Khaleque, 41 councilors take charges as KCC mayor",
+    "metaTitle": "councilors",
+    "slug": "councilors"
+}
